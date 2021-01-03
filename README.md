@@ -16,3 +16,5 @@ OE			->	PA3 (25)
 
 MOSFET Gate <- PA2 (24)  
 ![alt text](http://paupro.ddns.net/downloads/mega_pinout.png)
+
+Timer, es provarà d'utilitzar el input capture per mesurar la... fuckit. Ho farem configurable.
