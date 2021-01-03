@@ -14,4 +14,5 @@ S2			->	PA6 (28)
 S3			->	PA7 (29)  
 OE			->	PA3 (25)  
 
+MOSFET Gate <- PA2 (24)  
 ![alt text](http://paupro.ddns.net/downloads/mega_pinout.png)
