@@ -1,9 +1,17 @@
-// Do not remove the include below
 #include "arducar.h"
 
-//The setup function is called once at startup of the sketch
-TCS3200 sensor = TCS3200(&PORTA);
-Timer timer = Timer(&TCNT5, &TCCR5A, &TCCR5B);
+#define S0_bit 4
+#define S2_bit 6
+#define OE_bit 3
+#define MOS_bit 2
+
+
+const uint8_t sensorPinsMap[] = {S0_bit, S2_bit, OE_bit, MOS_bit};
+TCS3200 sensor = TCS3200(&PORTA, &DDRA, sensorPinsMap);
+Timer counter = Timer(&TCNT5, &TCCR5A, &TCCR5B);
+//Timer timer = Timer(&TCNT4, &TCCR4A, &TCCR4B);
+
+
 volatile bool but = 0;
 void ISR2(){
 	but = 1;
@@ -16,14 +24,15 @@ void printRegister(const char *name, unsigned int value){
 }
 void setup()
 {
+	Serial.begin(115200);
 	pinMode(19, INPUT_PULLUP);
 	attachInterrupt(digitalPinToInterrupt(19), ISR2, FALLING);
-	sensor.setup();
-	Serial.begin(115200);
+	sensor.setup(F_100_KHz);
 	sensor.on();
 	delay(10);
 	sensor.off();
-	timer.setup(true, 3);
+	counter.setup(EXTERNAL_CLK, NEG_EDGE, NORMAL_COUNTER);
+	//timer.setup(false, 3);
 }
 
 
@@ -38,6 +47,7 @@ void loop()
 		but = 0;
 	}
 	delay(100);
-	Serial.println(timer.read());
-	timer.reset();
+	Serial.print(0);
+	Serial.print(" ");
+	Serial.println(counter.reset());
 }
