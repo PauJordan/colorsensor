@@ -47,7 +47,7 @@ CSn2:0 =
 
 
 Readung TCNTn C example:
-'''C
+```C
 unsigned int TIM16_ReadTCNTn( void ) {  
 	unsigned char sreg;  
 	unsigned int i;  
@@ -58,5 +58,5 @@ unsigned int TIM16_ReadTCNTn( void ) {
 	/* Restore global interrupt flag */ SREG = sreg;
 	return i;
 }
-'''
+```
 
