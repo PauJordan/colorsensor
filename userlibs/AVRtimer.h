@@ -36,6 +36,18 @@
 #define FPWM_ICRn		14
 #define FPWM_OCRnA		15
 
+//Output compare match units
+#define A 0
+#define B 1
+#define C 2
+
+#define OC_DISABLED 0
+#define TOGGLEonCM 1
+#define CLEARonCM 2
+#define SETonCM 3
+
+
+
 class Timer {
 public:
 	Timer(volatile uint16_t *TCNTn, volatile uint8_t *TCCRnA, volatile uint8_t *TCCRnB);
@@ -45,6 +57,7 @@ public:
 	unsigned int reset();
 	void clear();
 	void write(uint16_t i);
+	void set_OC_mode(uint8_t channel, uint8_t mode);
 private:
 	volatile uint16_t *TCNTn;
 	volatile uint8_t *TCCRnA;

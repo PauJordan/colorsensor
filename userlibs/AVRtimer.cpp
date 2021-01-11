@@ -7,8 +7,10 @@
 #include "AVRtimer.h"
 
 #define WGMn1_0_position 0
-#define WGMn3_2_position 2
+#define WGMn3_2_position 3
 #define CSn2_0_position 0
+
+#define COMnA0_position 6
 
 Timer::Timer(volatile uint16_t *TCNTn, volatile uint8_t *TCCRnA, volatile uint8_t *TCCRnB) :
 	TCNTn(TCNTn),
@@ -89,6 +91,11 @@ void Timer::clear(){
 	SREG = sreg;
 }
 
+void Timer::set_OC_mode(uint8_t channel, uint8_t mode){
+	uint8_t bitpos = COMnA0_position - 2*channel;
+	*TCCRnA &= ~(0b11 <<  bitpos);
+	*TCCRnA |= (0b11 & mode) << bitpos;
+}
 
 
 
