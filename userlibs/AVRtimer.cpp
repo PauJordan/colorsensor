@@ -6,25 +6,33 @@
  */
 #include "AVRtimer.h"
 
-Timer::Timer(volatile uint16_t *TCNTn, volatile uint8_t *TCCRnA, volatile uint8_t *TCCRnB){
-	this->TCNTn = TCNTn;
-	this->TCCRnA = TCCRnA;
-	this->TCCRnB = TCCRnB;
-}
-void Timer::setup(bool external, uint8_t prescbits, uint8_t mode){
-	//Configura el timer
-	if (external) { //Si la font de clock es externa, configuració del registre TTCRnB. El prescaler no te efecte, limitem 1 o 0 per seleccionar edge.
-		if(prescbits > 1) prescbits = 1;
-		*(this->TCCRnB) = 0x06 + prescbits;
-	}
-	else
-		*(this->TCCRnB) = prescbits;
-	this->setMode(mode);
+#define WGMn1_0_position 0
+#define WGMn3_2_position 2
+#define CSn2_0_position 0
+
+Timer::Timer(volatile uint16_t *TCNTn, volatile uint8_t *TCCRnA, volatile uint8_t *TCCRnB) :
+	TCNTn(TCNTn),
+	TCCRnA(TCCRnA),
+	TCCRnB(TCCRnB)
+	{
+	write(0);
+	set_mode(HALT);
 }
 
-void Timer::setMode(unsigned char mode){
-	//Canvia el mode d'operació del timer
-	*(this->TCCRnA) = mode;
+void Timer::set_mode(unsigned char mode){
+	//Canvia el mode d'operació del timer. Els bits WGM3:0 estan separats en dos parelles en els registres TCCRnA i B.
+	*TCCRnA &= ~(0b11 << WGMn1_0_position);
+	*TCCRnA |= (0b11 & mode) << WGMn1_0_position;
+
+	*TCCRnB &= ~(0b11 << WGMn3_2_position);
+	*TCCRnB |= (0b11 & (mode >> 2)) << WGMn3_2_position;
+}
+
+void Timer::select_clock(unsigned char clk_sel){
+	//Selecciona el clock d'entrada.
+	*TCCRnB &= ~(0b111 << CSn2_0_position);
+	*TCCRnB |= (0b111 & clk_sel) << CSn2_0_position;
+
 }
 
 unsigned int Timer::read(){
@@ -34,9 +42,9 @@ unsigned int Timer::read(){
 	/* Save global interrupt flag */
 	sreg = SREG;
 	/* Disable interrupts globally */
-	SREG &= ~(1 << 7);
+	cli();
 	/* Read TCNTn into i */
-	i = *(this->TCNTn);
+	i = *TCNTn;
 	/* Restore global interrupt flag */
 	SREG = sreg;
 	return i;
@@ -48,9 +56,9 @@ void Timer::write(uint16_t i){
 	/* Save global interrupt flag */
 	sreg = SREG;
 	/* Disable interrupts globally */
-	SREG &= ~(1 << 7);
+	cli();
 	/* Read TCNTn into i */
-	*(this->TCNTn) = i;
+	*TCNTn = i;
 	/* Restore global interrupt flag */
 	SREG = sreg;
 }
@@ -62,10 +70,10 @@ unsigned int Timer::reset(){
 	/* Save global interrupt flag */
 	sreg = SREG;
 	/* Disable interrupts globally */
-	SREG &= ~(1 << 7);
+	cli();
 	/* Read TCNTn into i */
-	i = *(this->TCNTn);
-	*(this->TCNTn) = 0;
+	i = *TCNTn;
+	*TCNTn = 0;
 	/* Restore global interrupt flag */
 	SREG = sreg;
 	return i;
@@ -75,8 +83,8 @@ void Timer::clear(){
 	/* Save global interrupt flag */
 	unsigned char sreg = SREG;
 	/* Disable interrupts globally */
-	SREG &= ~(1 << 7);
-	*(this->TCNTn) = 0;
+	cli();
+	*TCNTn = 0;
 	/* Restore global interrupt flag */
 	SREG = sreg;
 }

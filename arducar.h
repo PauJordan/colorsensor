@@ -6,10 +6,12 @@
 
 #ifndef _arducar_H_
 #define _arducar_H_
+#include <avr/interrupt.h>
 #include "Arduino.h"
 //add your includes for the project arducar here
-#include "color.h"
-#include "AVRtimer.h"
+#include "color.h" //Sensor
+#include "AVRtimer.h" //Timers
+#include <plotPlus.h> //Serial plotting
 //end of add your includes here
 
 

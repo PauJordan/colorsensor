@@ -19,10 +19,13 @@ MOSFET 	   <- PA2 (24)
 
 #include "color.h"
 
-TCS3200::TCS3200(volatile unsigned char *port, volatile unsigned char *DDRx, const uint8_t *sensorPinMap){
-	this->port = port;
-	this->DDRx = DDRx;
-	this->sensorPinMap = sensorPinMap;
+TCS3200::TCS3200(volatile uint8_t* port, volatile unsigned char *DDRx, const uint8_t *sensorPinMap) :
+	port(port),
+	DDRx(DDRx),
+	sensorPinMap(sensorPinMap),
+	state(0)
+	{
+		off();
 }
 void TCS3200::setup(uint8_t f) {
 		uint8_t mask = 0;
@@ -50,6 +53,7 @@ void TCS3200::clearBit(uint8_t bit){
 void TCS3200::toggle(){
 	this->flipBit(MOS);
 	this->flipBit(OE);
+	this->state = !this->state;
 }
 
 void TCS3200::select_filter(uint8_t n){
@@ -65,9 +69,16 @@ void TCS3200::select_frequency(uint8_t n){
 void TCS3200::on(){
 	this->setBit(MOS);
 	this->clearBit(OE);
+	this->state = 1;
 }
 
 void TCS3200::off(){
 	this->clearBit(MOS);
 	this->setBit(OE);
+	this->state = 0;
 }
+bool TCS3200::get_state(){
+	return this->state;
+}
+
+

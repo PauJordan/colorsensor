@@ -1,6 +1,12 @@
 # Prerequisites
 *.d
 
+#Outputs
+*.hex
+
+#Hidden files
+.*
+
 # Compiled Object files
 *.slo
 *.lo
@@ -30,3 +36,4 @@
 *.exe
 *.out
 *.app
+/Release/

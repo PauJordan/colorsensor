@@ -23,14 +23,16 @@
 
 class TCS3200 {
 public:
-	TCS3200(volatile unsigned char *port, volatile unsigned char *DDRx, const uint8_t *sensorPinMap);
+	TCS3200(volatile uint8_t *port, volatile unsigned char *DDRx, const uint8_t *sensorPinMap);
 	void setup(uint8_t f);
 	void toggle();
 	void on();
 	void off();
 	void select_filter(uint8_t n);
 	void select_frequency(uint8_t n);
+	bool get_state();
 private:
+	bool state;
 	volatile uint8_t *port;
 	volatile uint8_t *DDRx;
 	void setBit(uint8_t bit);
