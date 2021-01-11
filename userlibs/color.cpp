@@ -30,55 +30,55 @@ TCS3200::TCS3200(volatile uint8_t* port, volatile unsigned char *DDRx, const uin
 void TCS3200::setup(uint8_t f) {
 		uint8_t mask = 0;
 		for(unsigned char i = 0; i < ctrl_pins_qty; i++){ //Construeix la mascara per configurar els pins com a outputs
-			mask |= 1 << this->sensorPinMap[i];
+			mask |= 1 << sensorPinMap[i];
 		}
-		mask |= 3 << this->sensorPinMap[S0]; //Aquests pins van en parella
-		mask |= 3 << this->sensorPinMap[S2];
-		this->off();
-		this->select_frequency(f);
-		this->select_filter(CLEAR);
-		*(this->DDRx) |= mask; //posa els pins seleccionats en mode output.
+		mask |= 3 << sensorPinMap[S0]; //Aquests pins van en parella
+		mask |= 3 << sensorPinMap[S2];
+		off();
+		select_frequency(f);
+		select_filter(CLEAR);
+		*(DDRx) |= mask; //posa els pins seleccionats en mode output.
 }
 
 void TCS3200::setBit(uint8_t bit){
-	*(this->port) |= 1 << this->sensorPinMap[bit];
+	*port |= 1 << sensorPinMap[bit];
 };
 void TCS3200::flipBit(uint8_t bit){
-	*(this->port) ^= 1 <<  this->sensorPinMap[bit];
+	*port ^= 1 <<  sensorPinMap[bit];
 };
 void TCS3200::clearBit(uint8_t bit){
-	*(this->port) &= ~(1 <<  this->sensorPinMap[bit]);
+	*port &= ~(1 <<  sensorPinMap[bit]);
 };
 
 void TCS3200::toggle(){
-	this->flipBit(MOS);
-	this->flipBit(OE);
-	this->state = !this->state;
+	flipBit(MOS);
+	flipBit(OE);
+	state = !state;
 }
 
 void TCS3200::select_filter(uint8_t n){
-	*(this->port) &= ~(3 << this->sensorPinMap[S2]);
-	*(this->port) |= n << this->sensorPinMap[S2];
+	*port &= ~(3 << sensorPinMap[S2]);
+	*port |= n << sensorPinMap[S2];
 }
 
 void TCS3200::select_frequency(uint8_t n){
-	*(this->port) &= ~(3 << this->sensorPinMap[S0]);
-	*(this->port) |= n << this->sensorPinMap[S0];
+	*port &= ~(3 << sensorPinMap[S0]);
+	*port |= n << sensorPinMap[S0];
 }
 
 void TCS3200::on(){
-	this->setBit(MOS);
-	this->clearBit(OE);
-	this->state = 1;
+	setBit(MOS);
+	clearBit(OE);
+	state = 1;
 }
 
 void TCS3200::off(){
-	this->clearBit(MOS);
-	this->setBit(OE);
-	this->state = 0;
+	clearBit(MOS);
+	setBit(OE);
+	state = 0;
 }
 bool TCS3200::get_state(){
-	return this->state;
+	return state;
 }
 
 
