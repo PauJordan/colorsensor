@@ -8,10 +8,14 @@
 #define INT2_ICSpos 4
 #define INT2_EIMSKpos 2
 
+
+
+
 const uint8_t sensorPinsMap[] = {S0_bit, S2_bit, OE_bit, MOS_bit};
 TCS3200 sensor(&PORTA, &DDRA, sensorPinsMap);
-Timer counter(&TCNT5, &TCCR5A, &TCCR5B);
-Timer timer(&TCNT4, &TCCR4A, &TCCR4B);
+
+Timer counter(TIMER_5);
+Timer timer(TIMER_1);
 
 //Interrupció boto.
 volatile bool but = false;
@@ -19,7 +23,7 @@ ISR(INT2_vect){
 	but = true;
 }
 volatile bool timer_ovf = false;
-ISR(TIMER4_COMPA_vect){
+ISR(TIMER1_COMPA_vect){
 	timer_ovf = true;
 }
 
@@ -39,13 +43,15 @@ void setup()
 	counter.select_clock(EXTERNAL_NE);
 	//Interrupt freq = sys_clk/(2*presc*(OCRnA+1)) = 16e6/(2*1024*(77+1) = 100,81 Hz
 	timer.set_mode(CTC_OCRnA);
-	OCR4A = 256;
-	TIMSK4 |= 1 << 1; //Enable timer 4 interrupt
+//	counter.set_OC_value(A, 256);
+//	counter.set_OC_mode(A, TOGGLEonCM);
+	*(timer.timreg.TIMSKn) |= 1 << 1; //Enable timer interrupt
 	timer.select_clock(SYS_1024);
 
 	//testing
 	pinMode(6, OUTPUT);
 	timer.set_OC_mode(A, TOGGLEonCM);
+	timer.set_OC_value(A, 256);
 
 	//Interrupts
 	EICRA &= ~(2 << INT2_ICSpos);
