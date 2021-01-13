@@ -28,5 +28,5 @@ OE			<-	PB4 (12)
 MOSFET Gate <- PB5 (13) 
   
 ![alt text](http://paupro.ddns.net/downloads/mega_pinout.png)
-
+![alt_text](https://images.prismic.io/circuito/8e3a980f0f964cc539b4cbbba2654bb660db6f52_arduino-uno-pinout-diagram.png)
 Timer, es provarà d'utilitzar el input capture per mesurar la... fuckit. Ho farem configurable.
