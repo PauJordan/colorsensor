@@ -36,20 +36,54 @@
 #define FPWM_ICRn		14
 #define FPWM_OCRnA		15
 
+//Output compare match units
+enum OC_channel : uint8_t {
+	A = 0, B, C
+};
+
+
+#define OC_DISABLED 0
+#define TOGGLEonCM 1
+#define CLEARonCM 2
+#define SETonCM 3
+
+
+#define TIMER_1 {&TCNT1, &TCCR1A, &TCCR1B, &TCCR1C, &OCR1A, &OCR1B, &OCR1C, &TIMSK1}
+#define TIMER_3 {&TCNT3, &TCCR3A, &TCCR3B, &TCCR3C, &OCR3A, &OCR3B, &OCR3C, &TIMSK3}
+#define TIMER_4 {&TCNT4, &TCCR4A, &TCCR4B, &TCCR4C, &OCR4A, &OCR4B, &OCR4C, &TIMSK4}
+#define TIMER_5 {&TCNT5, &TCCR5A, &TCCR5B, &TCCR5C, &OCR5A, &OCR5B, &OCR5C, &TIMSK5}
+
+struct TimerRegisters {
+	volatile uint16_t* TCNTn;
+	volatile uint8_t* TCCRnA;
+	volatile uint8_t* TCCRnB;
+	volatile uint8_t* TCCRnC;
+	volatile uint16_t* OCRnA;
+	volatile uint16_t* OCRnB;
+	volatile uint16_t* OCRnC;
+	volatile uint8_t* TIMSKn;
+};
+
 class Timer {
 public:
-	Timer(volatile uint16_t *TCNTn, volatile uint8_t *TCCRnA, volatile uint8_t *TCCRnB);
+	Timer(TimerRegisters timreg);
 	void select_clock(unsigned char clk_sel);
 	void set_mode(unsigned char mode);
 	unsigned int read();
 	unsigned int reset();
 	void clear();
 	void write(uint16_t i);
+	void set_OC_mode(OC_channel ch, uint8_t mode);
+	void set_OC_value(OC_channel ch, uint16_t value);
+	TimerRegisters timreg;
 private:
 	volatile uint16_t *TCNTn;
 	volatile uint8_t *TCCRnA;
 	volatile uint8_t *TCCRnB;
-
+	volatile uint16_t *OCRnA;
+	uint16_t read_16(volatile uint16_t* addr);
+	void write_16(volatile uint16_t* addr, uint16_t value);
+	uint16_t swap_16(volatile uint16_t* addr, uint16_t value);
 };
 
 

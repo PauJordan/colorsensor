@@ -28,7 +28,7 @@ OE			<-	PB4 (12)
 MOSFET Gate <- PB5 (13) 
   
 ![alt text](http://paupro.ddns.net/downloads/mega_pinout.png)
-
+![alt_text](https://images.prismic.io/circuito/8e3a980f0f964cc539b4cbbba2654bb660db6f52_arduino-uno-pinout-diagram.png)
 Timer, es provarà d'utilitzar el input capture per mesurar la... fuckit. Ho farem configurable.
 
 17/01/2021 Bè. ho hem conseguit. ara podem fer servir els timers 1, 3, 4 i 5. El problema es que si volem que funcioni amb el atmega 328p, ens haurem de conformar amb el input capture register per mesurar el periode. Si bè es veritat que podriem fer servir un sol timer i anar canviant el source clock, em sembla una solució poc efectiva. En canvi, seria millor utilitzar el clock del sistema per mesurar la frequència. D'aquesta manera, el fet de tenir un temps de mostreig no tant constant no afecta. Anem a implementar-ho. Ara farem servir el timer 0 per les interrupcions. Que collons, anem a fer servir el timer 2.

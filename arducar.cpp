@@ -8,15 +8,23 @@
 #define INT2_ICSpos 4
 #define INT2_EIMSKpos 2
 
+
+
+
 const uint8_t sensorPinsMap[] = {S0_bit, S2_bit, OE_bit, MOS_bit};
 TCS3200 sensor(&PORTA, &DDRA, sensorPinsMap);
-Timer counter(&TCNT5, &TCCR5A, &TCCR5B);
-Timer timer(&TCNT4, &TCCR4A, &TCCR4B);
 
+Timer counter(TIMER_5);
+Timer timer(TIMER_1);
 
-volatile bool but = 0;
+//Interrupció boto.
+volatile bool but = false;
 ISR(INT2_vect){
-	but = 1;
+	but = true;
+}
+volatile bool timer_ovf = false;
+ISR(TIMER1_COMPA_vect){
+	timer_ovf = true;
 }
 
 void printRegister(const char *name, unsigned int value){
@@ -26,7 +34,6 @@ void printRegister(const char *name, unsigned int value){
 }
 void setup()
 {
-	Serial.begin(115200);
 	pinMode(19, INPUT_PULLUP);
 	sensor.setup(F_500_KHz);
 	sensor.on();
@@ -36,14 +43,22 @@ void setup()
 	counter.select_clock(EXTERNAL_NE);
 	//Interrupt freq = sys_clk/(2*presc*(OCRnA+1)) = 16e6/(2*1024*(77+1) = 100,81 Hz
 	timer.set_mode(CTC_OCRnA);
-	OCR4A = 77;
+//	counter.set_OC_value(A, 256);
+//	counter.set_OC_mode(A, TOGGLEonCM);
+	*(timer.timreg.TIMSKn) |= 1 << 1; //Enable timer interrupt
 	timer.select_clock(SYS_1024);
+
+	//testing
+	pinMode(6, OUTPUT);
+	timer.set_OC_mode(A, TOGGLEonCM);
+	timer.set_OC_value(A, 256);
 
 	//Interrupts
 	EICRA &= ~(2 << INT2_ICSpos);
 	EICRA |= 2 << INT2_ICSpos;
 	EIMSK |= 1 << INT2_EIMSKpos;
 	sei();
+	Serial.begin(921600);
 }
 
 
@@ -58,10 +73,10 @@ void loop()
 		counter.clear();
 		but = 0;
 	}
-	delay(10);
-	if(sensor.get_state()){
+	if(timer_ovf and sensor.get_state()){
 		plot(counter.reset());
 		Serial.println();
+		timer_ovf = false;
 	}
 
 }
