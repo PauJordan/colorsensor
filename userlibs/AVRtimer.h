@@ -8,6 +8,7 @@
 #ifndef AVRTIMER_H_
 #define AVRTIMER_H_
 #include "Arduino.h"
+#include "avr_timer_2_registers.h"
 
 //Clock source. Bits CSn2:0 atmega2560 datasheet 17.11
 #define HALT		0
@@ -36,22 +37,27 @@
 #define FPWM_ICRn		14
 #define FPWM_OCRnA		15
 
+
+
 //Output compare match units
 enum OC_channel : uint8_t {
 	A = 0, B, C
 };
 
-
+//COMnX Compare Match Output Mode
 #define OC_DISABLED 0
 #define TOGGLEonCM 1
 #define CLEARonCM 2
 #define SETonCM 3
 
 
-#define TIMER_1 {&TCNT1, &TCCR1A, &TCCR1B, &TCCR1C, &OCR1A, &OCR1B, &OCR1C, &TIMSK1}
+#define TIMER_1 {&TCNT1, &TCCR1A, &TCCR1B, &TCCR1C, &OCR1A, &OCR1B, nullptr, &TIMSK1}
 #define TIMER_3 {&TCNT3, &TCCR3A, &TCCR3B, &TCCR3C, &OCR3A, &OCR3B, &OCR3C, &TIMSK3}
 #define TIMER_4 {&TCNT4, &TCCR4A, &TCCR4B, &TCCR4C, &OCR4A, &OCR4B, &OCR4C, &TIMSK4}
 #define TIMER_5 {&TCNT5, &TCCR5A, &TCCR5B, &TCCR5C, &OCR5A, &OCR5B, &OCR5C, &TIMSK5}
+
+
+
 
 struct TimerRegisters {
 	volatile uint16_t* TCNTn;
@@ -64,27 +70,65 @@ struct TimerRegisters {
 	volatile uint8_t* TIMSKn;
 };
 
-class Timer {
+
+
+class Timer_base {
+public:
+	virtual void select_clock(unsigned char clk_sel);
+	virtual void set_mode(unsigned char mode);
+
+	virtual void clear();
+	virtual void write(uint16_t i);
+	virtual void set_OC_mode(OC_channel ch, uint8_t mode);
+	virtual void set_OC_value(OC_channel ch, uint16_t value);
+	virtual ~Timer_base();
+};
+
+class Timer : public Timer_base {
 public:
 	Timer(TimerRegisters timreg);
+	TimerRegisters timreg;
 	void select_clock(unsigned char clk_sel);
 	void set_mode(unsigned char mode);
-	unsigned int read();
+	unsigned int read() const;
 	unsigned int reset();
 	void clear();
 	void write(uint16_t i);
 	void set_OC_mode(OC_channel ch, uint8_t mode);
 	void set_OC_value(OC_channel ch, uint16_t value);
-	TimerRegisters timreg;
 private:
 	volatile uint16_t *TCNTn;
 	volatile uint8_t *TCCRnA;
 	volatile uint8_t *TCCRnB;
 	volatile uint16_t *OCRnA;
-	uint16_t read_16(volatile uint16_t* addr);
+	uint16_t read_16(volatile uint16_t* addr) const;
 	void write_16(volatile uint16_t* addr, uint16_t value);
 	uint16_t swap_16(volatile uint16_t* addr, uint16_t value);
 };
+
+
+//#define TIMER_2 { &TCNT2, RegTCCR2A{TCCR2A}, &TCCR2B, &OCR2A, &OCR2B, &ASSR, &TIMSK2}
+
+
+
+
+class Timer2 : public Timer_base {
+public:
+	Timer2(Timer2_registers timreg);
+	Timer2_registers tim2reg;
+	void select_clock(unsigned char clk_sel);
+	void set_mode(unsigned char mode);
+	uint8_t read() const;
+	uint8_t reset(uint8_t i);
+	void clear();
+	void write(uint8_t i);
+	void set_OC_mode(OC_channel ch, uint8_t mode);
+	void set_OC_value(OC_channel ch, uint16_t value);
+
+
+};
+
+
 
 
 

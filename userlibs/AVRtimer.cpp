@@ -12,6 +12,8 @@
 
 #define COMnA0_position 6
 
+
+
 Timer::Timer(TimerRegisters timreg ) :
 	timreg(timreg),
 	TCNTn(timreg.TCNTn),
@@ -19,7 +21,7 @@ Timer::Timer(TimerRegisters timreg ) :
 	TCCRnB(timreg.TCCRnB),
 	OCRnA(timreg.OCRnA)
 	{
-	write(0);
+	write(uint16_t(0));
 	set_mode(HALT);
 }
 
@@ -39,7 +41,7 @@ void Timer::select_clock(unsigned char clk_sel){
 
 }
 
-unsigned int Timer::read(){
+unsigned int Timer::read() const {
 	return read_16(TCNTn);
 }
 
@@ -65,13 +67,13 @@ void Timer::set_OC_value(OC_channel ch, uint16_t value){
 	volatile uint16_t* OCRnX;
 	switch(ch){
 	case A: OCRnX = OCRnA; break;
-	default: break;
+	default: return;
 	}
 	write_16(OCRnX, value);
 }
 //Private:
 
-uint16_t Timer::read_16(volatile uint16_t* addr){
+uint16_t Timer::read_16(volatile uint16_t* addr) const {
 	//Llegeix el valor del comptador. Registre 16-bits operació atòmica.
 	uint8_t sreg;
 	uint16_t value;
@@ -104,6 +106,9 @@ uint16_t Timer::swap_16(volatile uint16_t* addr, uint16_t value){
 	return old_value;
 }
 
+Timer_base::~Timer_base(){
+
+}
 
 
 

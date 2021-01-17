@@ -12,7 +12,7 @@
 
 
 const uint8_t sensorPinsMap[] = {S0_bit, S2_bit, OE_bit, MOS_bit};
-TCS3200 sensor(&PORTA, &DDRA, sensorPinsMap);
+TCS3200 sensor{&PORTA, &DDRA, sensorPinsMap};
 
 Timer counter(TIMER_5);
 Timer timer(TIMER_1);
