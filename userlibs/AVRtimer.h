@@ -50,6 +50,10 @@ enum OC_channel : uint8_t {
 #define CLEARonCM 2
 #define SETonCM 3
 
+//Atmega328p patch
+#ifndef OCR1C
+#define OCR1C OCR1B
+#endif
 
 #define TIMER_1 {&TCNT1, &TCCR1A, &TCCR1B, &TCCR1C, &OCR1A, &OCR1B, nullptr, &TIMSK1}
 #define TIMER_3 {&TCNT3, &TCCR3A, &TCCR3B, &TCCR3C, &OCR3A, &OCR3B, &OCR3C, &TIMSK3}
