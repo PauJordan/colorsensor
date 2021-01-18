@@ -80,11 +80,7 @@ class Timer_base {
 public:
 	virtual void select_clock(unsigned char clk_sel);
 	virtual void set_mode(unsigned char mode);
-
-	virtual void clear();
-	virtual void write(uint16_t i);
 	virtual void set_OC_mode(OC_channel ch, uint8_t mode);
-	virtual void set_OC_value(OC_channel ch, uint16_t value);
 	virtual ~Timer_base();
 };
 
@@ -111,23 +107,27 @@ private:
 };
 
 
-//#define TIMER_2 { &TCNT2, RegTCCR2A{TCCR2A}, &TCCR2B, &OCR2A, &OCR2B, &ASSR, &TIMSK2}
+#define TIMER_2 { &TCNT2, &TCCR2A, &TCCR2B, &OCR2A, &OCR2B, &ASSR, &TIMSK2}
 
 
 
 
 class Timer2 : public Timer_base {
 public:
-	Timer2(Timer2_registers timreg);
+	Timer2(Timer2_registers tim2reg_addr);
 	Timer2_registers tim2reg;
 	void select_clock(unsigned char clk_sel);
 	void set_mode(unsigned char mode);
-	uint8_t read() const;
+	uint8_t read();
 	uint8_t reset(uint8_t i);
 	void clear();
 	void write(uint8_t i);
 	void set_OC_mode(OC_channel ch, uint8_t mode);
-	void set_OC_value(OC_channel ch, uint16_t value);
+	void set_OC_value(OC_channel ch, uint8_t value);
+	volatile RegTIMSK2* TIMSKn;
+private:
+	volatile RegTCCR2A* TCCRnA;
+	volatile RegTCCR2B* TCCRnB;
 
 
 };

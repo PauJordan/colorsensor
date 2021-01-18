@@ -17,47 +17,54 @@
 #define T2_PWM_PC_OCRnA	5
 #define T2_FPWM_OCRnA	7
 
+//Clock source. Bits CSn2:0
+#define T2_HALT			0
+#define T2_SYS			1
+#define T2_SYS_8		2
+#define T2_SYS_32		3
+#define T2_SYS_64		4
+#define T2_SYS_128		5
+#define T2_SYS_256		6
+#define T2_SYS_1024		7
+
+
 typedef struct {
-	volatile uint8_t COMnA : 2;
-	volatile uint8_t COMnB : 2;
-	volatile uint8_t  : 2; // COMnC no existeix al timer 2;
 	volatile uint8_t WGMn_10 : 2;
-} BitmapTCCR2A ;
+	volatile uint8_t  : 2; // COMnC no existeix al timer 2;
+	volatile uint8_t COMnB : 2;
+	volatile uint8_t COMnA : 2;
 
-typedef union {
-	BitmapTCCR2A as_bits;
-	volatile uint8_t as_byte;
-} RegTCCR2A;
+} RegTCCR2A ;
 
-struct RegTCCR2B {
-	bool FOCnA : 1;
-	bool FOCnB : 1;
-	uint8_t WGMn_2 : 1;
+
+
+typedef struct {
 	uint8_t CSn : 3;
-};
-
-struct RegTCCRnC {
-	bool FOCnA : 1;
+	uint8_t WGMn_2 : 1;
 	bool FOCnB : 1;
-	bool FOCnC : 1;
-	uint8_t : 5;
-};
+	bool FOCnA : 1;
 
-struct RegTIMSK2 {
-	uint8_t : 5;
-	bool OCIEnB : 1;
-	bool OCIEnA : 1;
+} RegTCCR2B ;
+
+
+typedef struct {
 	bool TOIEn : 1;
-};
+	bool OCIEnA : 1;
+	bool OCIEnB : 1;
+	uint8_t : 5;
+
+
+
+} RegTIMSK2;
 
 struct Timer2_registers {
 	volatile uint8_t* TCNTn;
-	volatile RegTCCR2A* TCCRnA;
-	volatile RegTCCR2B* TCCRnB;
+	volatile uint8_t* TCCRnA;
+	volatile uint8_t* TCCRnB;
 	volatile uint8_t* OCRnA;
 	volatile uint8_t* OCRnB;
-	volatile uint16_t* ASSRaddr;
-	volatile RegTIMSK2* TIMSKn;
+	volatile uint8_t* ASSRaddr;
+	volatile uint8_t* TIMSKn;
 };
 
 
