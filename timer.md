@@ -59,4 +59,13 @@ unsigned int TIM16_ReadTCNTn( void ) {
 	return i;
 }
 ```
+Timer interrupts:  
+atmega2560 datasheet 14.1
+	TIMER4 COMPA vector No. 43, $0054   
+	TIMER4 COMPB vector No. 44, $0056  
+	TIMER4 COMPC vector No. 45, $0058 
+Harder than it seems... Not quite!!! Yes we can
 
+TIMSKn Timer Interrupt Mask register.
+
+Sobre el timer 2 i 0. Son timers de 8 bits i operen bastant diferent del que ens pensem. els registers son diferents, tot es diferent. 
